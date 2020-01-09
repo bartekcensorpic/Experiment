@@ -1,4 +1,4 @@
-# HomeOfficeExperiment
+# Censorpic experiment
 
 Before running, the following arugments have to be specified:
 --model_path "path/to/tflite/model
