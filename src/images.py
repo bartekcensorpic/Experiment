@@ -10,12 +10,13 @@ def get_images_from_folder(folder_path,image_extention):
 def get_batches(images_path_list,batch_size, image_size):
     n_batches = len(images_path_list) // batch_size
     for i in range(n_batches):
-        start = i
-        end = i+batch_size
+        start = batch_size*i
+        end = batch_size*(i+1)
         img_paths = images_path_list[start:end]
         normalised_imgs = []
         corrupted_idx = []
         for index, path in enumerate(img_paths):
+            print(f'[Info] loading image {path}')
             try:
                 image = Image.open(path).convert('RGB').resize(image_size)
             except:
@@ -32,7 +33,9 @@ def get_batches(images_path_list,batch_size, image_size):
 
             normalised_imgs.append(pix)
 
-        yield (np.array(normalised_imgs).reshape((batch_size,)+ image_size +(3,)),corrupted_idx)
+        images = np.array(normalised_imgs)
+        images = images.reshape((batch_size,)+ image_size +(3,))
+        yield (images, corrupted_idx)
 
 
 

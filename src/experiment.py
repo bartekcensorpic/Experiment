@@ -42,7 +42,7 @@ class Experiment:
 
         for i in range(predictions.shape[0]):
             if i in corrupted_idx:
-                print('this image was corrupted, results skipped')
+                print('image was corrupted, results skipped')
             else:
                 pred = predictions[i]
                 print(f"real label: {real_label}, "
@@ -72,7 +72,7 @@ class Experiment:
         self.__evaluate_batches(nude_batches, "nude")
         self.__evaluate_batches(non_nude_batches, "non_nude")
 
-        save_file_path = os.path.join(self.output_details,'results.csv')
+        save_file_path = os.path.join(self.output_folder,'results.csv')
         self.df.to_csv(save_file_path, index=False, quotechar='"', encoding='ascii')
 
 
