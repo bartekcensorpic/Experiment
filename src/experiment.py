@@ -28,9 +28,6 @@ class Experiment:
         self.classes = classes
         self.image_extention = image_extention
 
-
-
-
     def __prepare(self):
         num_classes = len(self.classes)
         self.tf_model, self.input_details, self.output_details = load_model(self.model_path, self.batch_size, self.image_size, num_classes)
@@ -41,24 +38,27 @@ class Experiment:
         self.df = pd.DataFrame(columns=['real_label']+self.classes)
 
 
-    def __log_predictions(self, predictions, real_label):
+    def __log_predictions(self, predictions, real_label, corrupted_idx):
 
         for i in range(predictions.shape[0]):
-            pred = predictions[i]
-            print(f"real label: {real_label}, "
-                  f"predictions: {zip_prediction_with_classes(pred,self.classes)}, "
-                  f"rounded_predictions: {rounded_predictions(pred, self.classes)}")
-            loc = len(self.df)
-            self.df.loc[loc] =  [real_label] + list(pred)
+            if i in corrupted_idx:
+                print('this image was corrupted, results skipped')
+            else:
+                pred = predictions[i]
+                print(f"real label: {real_label}, "
+                      f"predictions: {zip_prediction_with_classes(pred,self.classes)}, "
+                      f"rounded_predictions: {rounded_predictions(pred, self.classes)}")
+                loc = len(self.df)
+                self.df.loc[loc] =  [real_label] + list(pred)
 
     def __evaluate_batches(self, batches_gen, real_label):
 
-        for batch in batches_gen:
+        for batch, corrupted_idx in batches_gen:
             self.tf_model.set_tensor(self.input_details[0]["index"], batch)
             self.tf_model.invoke()
             tflite_q_model_predictions = self.tf_model.get_tensor(self.output_details[0]["index"])
             tflite_q_pred_rounded = np.around(tflite_q_model_predictions, decimals=3)
-            self.__log_predictions(tflite_q_pred_rounded, real_label)
+            self.__log_predictions(tflite_q_pred_rounded, real_label, corrupted_idx)
 
 
     def run_experiment(self):
@@ -74,9 +74,6 @@ class Experiment:
 
         save_file_path = os.path.join(self.output_details,'results.csv')
         self.df.to_csv(save_file_path, index=False, quotechar='"', encoding='ascii')
-
-
-
 
 
 
