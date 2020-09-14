@@ -1,5 +1,6 @@
-# Censorpic experiment
 
+## This was supposed to be used at the very early stage by home office.
+# Censorpic experiment
 This script assesses the quality of our nudity detection algorithm (TensorFlow lite model) in the hopes of being able to reduce the volume of indecent underage imagery. The output produces CSV file with the real class of image and our associated prediction.
 This script does not save, display or send any images anywhere.
 
